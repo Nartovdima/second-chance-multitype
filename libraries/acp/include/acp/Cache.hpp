@@ -1,6 +1,7 @@
 #ifndef ACP_CACHE_HPP
 #define ACP_CACHE_HPP
 
+#include <algorithm>
 #include <cstddef>
 #include <list>
 #include <new>
