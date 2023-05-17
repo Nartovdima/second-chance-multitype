@@ -47,7 +47,7 @@ endif()
 include(${CMAKE_BINARY_DIR}/conan.cmake)
 
 conan_cmake_configure(
-    REQUIRES gtest/1.13.0 jemalloc/5.3.0
+    REQUIRES gtest/1.13.0
     GENERATORS cmake_find_package
 )
 
@@ -58,6 +58,21 @@ conan_cmake_install(
     BUILD missing
     REMOTE conancenter
     SETTINGS ${settings}
+)
+
+conan_cmake_configure(
+    REQUIRES jemalloc/5.3.0
+    GENERATORS cmake_find_package
+)
+
+conan_cmake_autodetect(settings)
+
+conan_cmake_install(
+    PATH_OR_REFERENCE .
+    BUILD missing
+    REMOTE conancenter
+    SETTINGS ${settings}
+    ERROR_QUIET
 )
 
 add_subdirectory(libraries)

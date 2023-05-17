@@ -27,7 +27,10 @@ if(COMPILE_OPTS)
 endif()
 
 if((NOT TESTS_BUILD_TYPE) OR (TESTS_BUILD_TYPE MATCHES NONE))
-    find_package(jemalloc REQUIRED)
-    target_compile_definitions(tests PRIVATE JEMALLOC)
-    target_link_libraries(tests PRIVATE jemalloc::jemalloc)
+    find_package(jemalloc QUIET)
+
+    if(jemalloc_FOUND)
+        target_compile_definitions(tests PRIVATE JEMALLOC)
+        target_link_libraries(tests PRIVATE jemalloc::jemalloc)
+    endif()
 endif()

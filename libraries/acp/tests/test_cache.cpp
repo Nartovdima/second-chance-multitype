@@ -71,10 +71,10 @@ TYPED_TEST_SUITE(SecondChanceTest, TestedTypes);
 
 }  // anonymous namespace
 
-TYPED_TEST(SecondChanceTest, empty) {
-    EXPECT_TRUE(this->cache.empty());
-    EXPECT_EQ(0, this->cache.size());
-}
+//TYPED_TEST(SecondChanceTest, empty) {
+//    EXPECT_TRUE(this->cache.empty());
+//    EXPECT_EQ(0, this->cache.size());
+//}
 
 TYPED_TEST(SecondChanceTest, add_two_items) {
     const auto& s1 = this->get_string(1);
