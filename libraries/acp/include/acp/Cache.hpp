@@ -2,9 +2,9 @@
 #define ACP_CACHE_HPP
 
 #include <cstddef>
+#include <list>
 #include <new>
 #include <ostream>
-#include <list>
 
 template <class Key, class KeyProvider, class Allocator>
 class Cache {
@@ -32,9 +32,10 @@ private:
 
 template <class Key, class KeyProvider, class Allocator>
 template <class T>
-inline T &Cache<Key, KeyProvider, Allocator>::get(const Key & key) {
-    auto find_elem_pos = std::find_if(m_queue.begin(), m_queue.end(),
-                           [&key](const std::pair<KeyProvider *, bool> & q_element) { return *(q_element.first) == key; });
+inline T &Cache<Key, KeyProvider, Allocator>::get(const Key &key) {
+    auto find_elem_pos =
+        std::find_if(m_queue.begin(), m_queue.end(),
+                     [&key](const std::pair<KeyProvider *, bool> &q_element) { return *(q_element.first) == key; });
     if (find_elem_pos != m_queue.end()) {
         find_elem_pos->second = true;
         return *reinterpret_cast<T *>(find_elem_pos->first);
@@ -49,7 +50,6 @@ inline T &Cache<Key, KeyProvider, Allocator>::get(const Key & key) {
         m_alloc.template destroy<KeyProvider>(m_queue.back().first);
         m_queue.pop_back();
     }
-    
 
     m_queue.push_front({m_alloc.template create<T>(key), false});
     return *reinterpret_cast<T *>(m_queue.front().first);
