@@ -5,10 +5,13 @@
 PoolAllocator::PoolAllocator(std::size_t const block_size, std::initializer_list<std::size_t> sizes)
     : obj_sizes(sizes), m_storage(sizes.size(), std::vector<std::byte>(block_size)) {
     std::size_t block_ind = 0;
+    std::size_t max_size  = 0;
     for (const auto& it : sizes) {
+        max_size += m_storage[0].size() / it;
         m_obj_sizes_map[it] = block_ind;
         block_ind++;
     }
+    m_sizes_map.reserve(max_size);
 }
 
 std::byte* PoolAllocator::find_empty_place(std::size_t const n, std::size_t const block_ind) {
