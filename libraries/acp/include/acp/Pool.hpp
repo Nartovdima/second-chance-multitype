@@ -23,7 +23,7 @@ private:
     std::vector<std::vector<std::byte>> m_storage;
     std::vector<std::vector<bool>> m_used_map;
 
-    std::size_t find_empty_place(std::size_t const n, std::size_t const block_ind);
+    std::size_t find_empty_place(std::size_t const block_ind);
 };
 
 #endif  // ACP_POOL_HPP

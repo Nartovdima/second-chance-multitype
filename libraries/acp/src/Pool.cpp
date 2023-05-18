@@ -12,7 +12,7 @@ PoolAllocator::PoolAllocator(std::size_t const block_size, std::initializer_list
     }
 }
 
-std::size_t PoolAllocator::find_empty_place(std::size_t const n, std::size_t const block_ind) {
+std::size_t PoolAllocator::find_empty_place(std::size_t const block_ind) {
     for (std::size_t i = 0; i < m_used_map[block_ind].size(); ++i) {
         if (!m_used_map[block_ind][i]) {
             return i;
@@ -23,7 +23,7 @@ std::size_t PoolAllocator::find_empty_place(std::size_t const n, std::size_t con
 
 void* PoolAllocator::allocate(std::size_t const n) {
     std::size_t block_ind = std::distance(obj_sizes.begin(), std::find(obj_sizes.begin(), obj_sizes.end(), n));
-    const std::size_t pos = find_empty_place(n, block_ind);
+    const std::size_t pos = find_empty_place(block_ind);
     if (pos != npos) {
         m_used_map[block_ind][pos] = true;
         const auto ptr             = &m_storage[block_ind][pos * n];
