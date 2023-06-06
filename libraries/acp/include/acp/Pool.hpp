@@ -16,14 +16,12 @@ public:
     void deallocate(void const* ptr);
 
 private:
-    static constexpr std::size_t npos = static_cast<std::size_t>(-1);
 
     std::vector<std::size_t> obj_sizes;
 
     std::vector<std::vector<std::byte>> m_storage;
     std::vector<std::vector<bool>> m_used_map;
 
-    std::size_t find_empty_place(std::size_t const block_ind);
 };
 
 #endif  // ACP_POOL_HPP

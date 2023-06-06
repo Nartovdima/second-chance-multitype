@@ -3,7 +3,7 @@
 
 #include <algorithm>
 #include <cstddef>
-#include <list>
+#include <queue>
 #include <new>
 #include <ostream>
 
@@ -25,10 +25,21 @@ public:
 
     friend std::ostream &operator<<(std::ostream &strm, const Cache &cache) { return cache.print(strm); }
 
+    ~Cache() {
+        for (auto & item : m_queue) {
+            m_alloc.template destroy<KeyProvider>(item.object);
+        }
+    }
 private:
+    class Entry {
+    public:
+        KeyProvider * object;
+        bool usage_flag;
+    };
+
     const std::size_t m_max_size;
     Allocator m_alloc;
-    std::list<std::pair<KeyProvider *, bool>> m_queue;
+    std::deque<Entry> m_queue;
 };
 
 template <class Key, class KeyProvider, class Allocator>
@@ -36,24 +47,24 @@ template <class T>
 inline T &Cache<Key, KeyProvider, Allocator>::get(const Key &key) {
     auto find_elem_pos =
         std::find_if(m_queue.begin(), m_queue.end(),
-                     [&key](const std::pair<KeyProvider *, bool> &q_element) { return *(q_element.first) == key; });
+                     [&key](const Entry &q_element) { return *(q_element.object) == key; });
     if (find_elem_pos != m_queue.end()) {
-        find_elem_pos->second = true;
-        return *reinterpret_cast<T *>(find_elem_pos->first);
+        find_elem_pos->usage_flag = true;
+        return *static_cast<T *>(find_elem_pos->object);
     }
     if (m_queue.size() == m_max_size) {
-        while (m_queue.back().second != 0) {
+        while (m_queue.back().usage_flag) {
             auto tmp   = m_queue.back();
-            tmp.second = false;
+            tmp.usage_flag = false;
             m_queue.pop_back();
-            m_queue.push_front(tmp);
+            m_queue.push_front(std::move(tmp));
         }
-        m_alloc.template destroy<KeyProvider>(m_queue.back().first);
+        m_alloc.template destroy<KeyProvider>(m_queue.back().object);
         m_queue.pop_back();
     }
 
     m_queue.push_front({m_alloc.template create<T>(key), false});
-    return *reinterpret_cast<T *>(m_queue.front().first);
+    return *static_cast<T *>(m_queue.front().object);
 }
 
 template <class Key, class KeyProvider, class Allocator>
