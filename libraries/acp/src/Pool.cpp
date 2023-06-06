@@ -15,11 +15,8 @@ PoolAllocator::PoolAllocator(std::size_t const block_size, std::initializer_list
 void* PoolAllocator::allocate(std::size_t const n) {
     std::size_t block_ind = std::distance(obj_sizes.begin(), std::find(obj_sizes.begin(), obj_sizes.end(), n));
     const std::size_t pos = std::distance(m_used_map[block_ind].begin(),
-                                          std::find_if(m_used_map[block_ind].begin(),
-                                                       m_used_map[block_ind].end(),
-                                                       [](const bool & cell){
-                                                           return !cell;
-                                                       }));
+                                          std::find_if(m_used_map[block_ind].begin(), m_used_map[block_ind].end(),
+                                                       [](const bool& cell) { return !cell; }));
     if (pos != m_used_map[block_ind].size()) {
         m_used_map[block_ind][pos] = true;
         const auto ptr             = &m_storage[block_ind][pos * n];

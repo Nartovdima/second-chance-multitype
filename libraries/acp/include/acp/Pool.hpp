@@ -16,12 +16,10 @@ public:
     void deallocate(void const* ptr);
 
 private:
-
     std::vector<std::size_t> obj_sizes;
 
     std::vector<std::vector<std::byte>> m_storage;
     std::vector<std::vector<bool>> m_used_map;
-
 };
 
 #endif  // ACP_POOL_HPP

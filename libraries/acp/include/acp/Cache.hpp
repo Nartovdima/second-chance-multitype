@@ -3,9 +3,9 @@
 
 #include <algorithm>
 #include <cstddef>
-#include <queue>
 #include <new>
 #include <ostream>
+#include <queue>
 
 template <class Key, class KeyProvider, class Allocator>
 class Cache {
@@ -26,14 +26,15 @@ public:
     friend std::ostream &operator<<(std::ostream &strm, const Cache &cache) { return cache.print(strm); }
 
     ~Cache() {
-        for (auto & item : m_queue) {
+        for (auto &item : m_queue) {
             m_alloc.template destroy<KeyProvider>(item.object);
         }
     }
+
 private:
     class Entry {
     public:
-        KeyProvider * object;
+        KeyProvider *object;
         bool usage_flag;
     };
 
@@ -45,16 +46,15 @@ private:
 template <class Key, class KeyProvider, class Allocator>
 template <class T>
 inline T &Cache<Key, KeyProvider, Allocator>::get(const Key &key) {
-    auto find_elem_pos =
-        std::find_if(m_queue.begin(), m_queue.end(),
-                     [&key](const Entry &q_element) { return *(q_element.object) == key; });
+    auto find_elem_pos = std::find_if(m_queue.begin(), m_queue.end(),
+                                      [&key](const Entry &q_element) { return *(q_element.object) == key; });
     if (find_elem_pos != m_queue.end()) {
         find_elem_pos->usage_flag = true;
         return *static_cast<T *>(find_elem_pos->object);
     }
     if (m_queue.size() == m_max_size) {
         while (m_queue.back().usage_flag) {
-            auto tmp   = m_queue.back();
+            auto tmp       = m_queue.back();
             tmp.usage_flag = false;
             m_queue.pop_back();
             m_queue.push_front(std::move(tmp));
